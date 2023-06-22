@@ -3,7 +3,8 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"sync"
+
+	// "sync"
 	"time"
 )
 
@@ -21,42 +22,44 @@ type UserData struct {
 	userTix uint
 }
 
-var wg = sync.WaitGroup{}
+// var wg = sync.WaitGroup{}
 
 func main() {
 
 	greet()
 
-	fname, lname, email, userTix := getuserInput()
-	//validate
-	isValidEmail, isValidUserTix, isValidName := helper.ValidateUserInput(fname, lname, email, userTix, remaininTix)
+	for {
+		fname, lname, email, userTix := getuserInput()
+		//validate
+		isValidEmail, isValidUserTix, isValidName := helper.ValidateUserInput(fname, lname, email, userTix, remaininTix)
 
-	if isValidEmail && isValidName && isValidUserTix {
+		if isValidEmail && isValidName && isValidUserTix {
 
-		bookings, remaininTix = bookTix(userTix, fname, lname, email)
-		wg.Add(1)
-		go sendTix(userTix, fname, lname, email)
-		fmt.Printf("All the bookings are: %v ", getFirstNames())
+			bookings, remaininTix = bookTix(userTix, fname, lname, email)
+			// wg.Add(1)
+			go sendTix(userTix, fname, lname, email)
+			fmt.Printf("All the bookings are: %v ", getFirstNames())
 
-		noTixAvailable := remaininTix == 0
-		if noTixAvailable {
-			//end prog
-			fmt.Println("Our conference is booked out. Come back next year!")
+			noTixAvailable := remaininTix == 0
+			if noTixAvailable {
+				//end prog
+				fmt.Println("Our conference is booked out. Come back next year!")
 
-		}
-	} else {
+			}
+		} else {
 
-		if !isValidName {
-			fmt.Print("The name you have entered is invalid\n")
-		}
-		if !isValidEmail {
-			fmt.Print("The email you have entered doesn't contains '@' symbol.\n")
-		}
-		if !isValidUserTix {
-			fmt.Printf("We only have %v available. You can't book %v tickets.\n", remaininTix, userTix)
+			if !isValidName {
+				fmt.Print("The name you have entered is invalid\n")
+			}
+			if !isValidEmail {
+				fmt.Print("The email you have entered doesn't contains '@' symbol.\n")
+			}
+			if !isValidUserTix {
+				fmt.Printf("We only have %v available. You can't book %v tickets.\n", remaininTix, userTix)
+			}
 		}
 	}
-	wg.Wait()
+	// wg.Wait()
 }
 
 func greet() {
@@ -117,5 +120,5 @@ func sendTix(userTix uint, fname string, lname string, email string) {
 	fmt.Println("########################################")
 	fmt.Printf(" Sending ticket %v to email %v\n", tix, email)
 	fmt.Println("########################################")
-	wg.Done()
+	// wg.Done()
 }
